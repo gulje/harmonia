@@ -20,21 +20,21 @@ Before reading:
     - `[album(s)]`: `[album|albums]`.
 
 ### Selection
-```toml
+```sql
 select tracks in [playlist(s)] with [condition(s)]
 select playlists with [condition(s)]
 select albums in [ ... with [condition(s)]
 ```
 
 ### Custom Implementations
-```toml
+```sql
 define [sorting|duplication|renaming|exporting] implementation [custom_implementation] {
     # Custom implementation logic
 }
 ```
 
 ### Playlists
-```toml
+```sql
 # Creating and Merging
 create playlist [playlist_identifier] with [tracks]
 merge [playlists] into [playlist|playlist_identifier]
@@ -70,7 +70,7 @@ save [playlist(s)]
 ```
 
 ### Functions
-```toml
+```sql
 function [function_name]([parameter(s)]) {
     # Function body
 }
@@ -80,7 +80,7 @@ call [function_name]([parameter(s)])
 ```
 
 ### Track Tags
-```toml
+```sql
 # Adding and Removing Tags
 add tag [tag_name] to [track(s)]
 remove tag [tag_name] to [track(s)]
@@ -91,6 +91,6 @@ rename tag [tag(s)] with [custom_implementation]
 ```
 
 ### Invoking Shell Commands
-```toml
+```sql
 shell [command]
 ```
