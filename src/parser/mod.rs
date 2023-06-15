@@ -19,13 +19,19 @@ use crate::lexer::Token;
 pub struct Parser {
     tokens: Vec<Token>,
     current_token: Option<Token>,
+    selected_tracks: Vec<String>,
+    selected_playlists: Vec<String>,
 }
 
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
+        let selected_tracks = vec![];
+        let selected_playlists = vec![];
         Parser {
             tokens,
             current_token: None,
+            selected_tracks,
+            selected_playlists,
         }
     }
 
@@ -83,9 +89,7 @@ impl Parser {
         self.capture_keyword("playlist");
         let playlist_name = self.capture_string_literal("Expected playlist name");
 
-        if let Some(Token::Newline) = self.current_token {
-            self.advance();
-        }
+        self.skip_newline();
 
         if let Some(Token::Keyword(keyword)) = &self.current_token {
             if keyword == "with" {
@@ -112,9 +116,7 @@ impl Parser {
 
         let playlists = self.capture_playlists();
 
-        if let Some(Token::Newline) = self.current_token {
-            self.advance();
-        }
+        self.skip_newline();
 
         if let Some(Token::Keyword(keyword)) = &self.current_token {
             if keyword == "into" {
@@ -131,8 +133,32 @@ impl Parser {
         }
     }
 
+    fn skip_newline(&mut self) {
+        if let Some(Token::Newline) = self.current_token {
+            self.advance();
+        }
+    }
+
     fn capture_tracks(&mut self) -> Vec<String> {
         let mut tracks = Vec::new();
+
+        if let Some(Token::Keyword(keyword)) = &self.current_token {
+            if keyword == "selected" {
+                self.advance();
+
+                if let Some(Token::Keyword(keyword)) = &self.current_token {
+                    if keyword == "tracks" {
+                        tracks = self.selected_tracks.clone();
+                        self.advance();
+                        return tracks;
+                    } else {
+                        panic!("Invalid syntax")
+                    }
+                } else {
+                    panic!("Invalid syntax")
+                }
+            }
+        }
 
         loop {
             let track_name = self.capture_string_literal("Expected a track");
@@ -154,6 +180,24 @@ impl Parser {
 
     fn capture_playlists(&mut self) -> Vec<String> {
         let mut playlists = Vec::new();
+
+        if let Some(Token::Keyword(keyword)) = &self.current_token {
+            if keyword == "selected" {
+                self.advance();
+
+                if let Some(Token::Keyword(keyword)) = &self.current_token {
+                    if keyword == "playlists" {
+                        playlists = self.selected_playlists.clone();
+                        self.advance();
+                        return playlists;
+                    } else {
+                        panic!("Invalid syntax")
+                    }
+                } else {
+                    panic!("Invalid syntax")
+                }
+            }
+        }
 
         loop {
             let playlist_name = self.capture_string_literal("Expected a playlist");
