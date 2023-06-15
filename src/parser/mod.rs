@@ -43,7 +43,16 @@ impl Parser {
             match token {
                 Token::Keyword(keyword) => match keyword.as_str() {
                     "create" => {
-                        self.parse_create();
+                        let expr = self.parse_create();
+
+                        if expr.tracks.is_empty() {
+                            println!("Create playlist '{}'", expr.playlist_name);
+                        } else {
+                            println!(
+                                "Create playlist '{}' with tracks: {:?}",
+                                expr.playlist_name, expr.tracks
+                            );
+                        }
                     }
                     _ => {
                         self.advance();
@@ -61,7 +70,7 @@ impl Parser {
         }
     }
 
-    fn parse_create(&mut self) {
+    fn parse_create(&mut self) -> CreateExpr {
         self.advance();
         self.capture_keyword("playlist");
         let playlist_name = self.capture_string_literal("Expected playlist name");
@@ -75,12 +84,18 @@ impl Parser {
                 self.advance();
                 let tracks = self.capture_tracks();
 
-                println!("Create playlist {playlist_name:?} with tracks: {tracks:?}");
+                CreateExpr {
+                    playlist_name,
+                    tracks,
+                }
             } else {
-                println!("Create playlist {playlist_name:?}");
+                panic!("Invalid syntax")
             }
         } else {
-            println!("Create playlist {playlist_name:?}");
+            CreateExpr {
+                playlist_name,
+                tracks: vec![],
+            }
         }
     }
 
@@ -135,4 +150,9 @@ impl Parser {
     fn error(message: &str) {
         panic!("{}", message)
     }
+}
+
+struct CreateExpr {
+    playlist_name: String,
+    tracks: Vec<String>,
 }
