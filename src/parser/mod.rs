@@ -120,7 +120,7 @@ impl Parser {
     fn capture_string_literal(&mut self, error_msg: &str) -> String {
         if let Some(Token::StringLiteral(value)) = self.current_token.take() {
             self.advance();
-            value.clone()
+            value
         } else {
             self.error(error_msg)
         }
