@@ -30,10 +30,10 @@ impl Parser {
     }
 
     fn advance(&mut self) {
-        if !self.tokens.is_empty() {
-            self.current_token = Some(self.tokens.remove(0));
-        } else {
+        if self.tokens.is_empty() {
             self.current_token = None;
+        } else {
+            self.current_token = Some(self.tokens.remove(0));
         }
     }
 
@@ -110,10 +110,14 @@ impl Parser {
             if value == expected {
                 self.advance();
             } else {
-                self.error(&format!("Expected keyword: '{expected}'"))
+                Parser::error(&format!("Expected keyword: '{expected}'"));
+
+                panic!()
             }
         } else {
-            self.error(&format!("Expected keyword: '{expected}'"))
+            Parser::error(&format!("Expected keyword: '{expected}'"));
+
+            panic!()
         }
     }
 
@@ -122,11 +126,13 @@ impl Parser {
             self.advance();
             value
         } else {
-            self.error(error_msg)
+            Parser::error(error_msg);
+
+            panic!()
         }
     }
 
-    fn error<T>(&self, message: &str) -> T {
+    fn error(message: &str) {
         panic!("{}", message)
     }
 }
