@@ -44,7 +44,6 @@ impl Parser {
                 Token::Keyword(keyword) => match keyword.as_str() {
                     "create" => {
                         let expr = self.parse_create();
-
                         if expr.tracks.is_empty() {
                             println!("Create playlist '{}'", expr.playlist_name);
                         } else {
@@ -52,6 +51,15 @@ impl Parser {
                                 "Create playlist '{}' with tracks: {:?}",
                                 expr.playlist_name, expr.tracks
                             );
+                        }
+                    }
+                    "merge" => {
+                        let expr = self.parse_merge();
+
+                        if expr.playlists.len() < 2 {
+                            panic!("Expected two or more playlists");
+                        } else {
+                            println!("Merge playlists {:?} into {}", expr.playlists, expr.into)
                         }
                     }
                     _ => {
@@ -99,6 +107,30 @@ impl Parser {
         }
     }
 
+    fn parse_merge(&mut self) -> MergeExpr {
+        self.advance();
+
+        let playlists = self.capture_playlists();
+
+        if let Some(Token::Newline) = self.current_token {
+            self.advance();
+        }
+
+        if let Some(Token::Keyword(keyword)) = &self.current_token {
+            if keyword == "into" {
+                self.advance();
+
+                let into = self.capture_string_literal("Expected playlist name");
+
+                MergeExpr { playlists, into }
+            } else {
+                panic!("Invalid syntax")
+            }
+        } else {
+            panic!("Invalid syntax")
+        }
+    }
+
     fn capture_tracks(&mut self) -> Vec<String> {
         let mut tracks = Vec::new();
 
@@ -118,6 +150,27 @@ impl Parser {
         }
 
         tracks
+    }
+
+    fn capture_playlists(&mut self) -> Vec<String> {
+        let mut playlists = Vec::new();
+
+        loop {
+            let playlist_name = self.capture_string_literal("Expected a playlist");
+            playlists.push(playlist_name);
+
+            if let Some(Token::Punctuation(punctuation)) = &self.current_token {
+                if punctuation == "," {
+                    self.advance();
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        playlists
     }
 
     fn capture_keyword(&mut self, expected: &str) {
@@ -155,4 +208,9 @@ impl Parser {
 struct CreateExpr {
     playlist_name: String,
     tracks: Vec<String>,
+}
+
+struct MergeExpr {
+    playlists: Vec<String>,
+    into: String,
 }

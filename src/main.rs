@@ -42,6 +42,10 @@ create playlist 'test1' with "hehe"
 create playlist 'test1'
     with "test", "test2"
 create playlist 'test231312'
+
+merge "a", "b" into "b"
+merge "x", "y"
+    into "xy"
 "#;
 
     let _args = Arguments::parse();
