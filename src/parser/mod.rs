@@ -24,10 +24,21 @@ pub struct Parser {
 }
 
 impl Parser {
+    /// # Overview
+    /// The `new` function conjures a new instance of the `Parser` struct.
+    ///
+    /// # Usage
+    /// To create a new `Parser` instance and begin your parsing journey,
+    /// simply invoke the `Parser::new` function and pass the `tokens`.
+    ///
+    /// ```rust
+    /// let tokens: Vec<Token> = /* Obtain tokens */;
+    /// let mut parser = Parser::new(tokens);
+    /// ```
     pub fn new(tokens: Vec<Token>) -> Self {
         let selected_tracks = vec![];
         let selected_playlists = vec![];
-        Parser {
+        Self {
             tokens,
             current_token: None,
             selected_tracks,
@@ -35,6 +46,8 @@ impl Parser {
         }
     }
 
+    /// To advance the `Parser` and move to the next token, simply invoke the `advance` function.
+    /// It will update the `current_token` accordingly.
     fn advance(&mut self) {
         if self.tokens.is_empty() {
             self.current_token = None;
@@ -43,6 +56,23 @@ impl Parser {
         }
     }
 
+    /// # Overview
+    /// The `parse` function is responsible for orchestrating the parsing process within the `Parser` instance.
+    /// It traverses through the tokens and performs different actions based on the encountered token type.
+    /// It gracefully handles keywords, identifiers, literals, operators, punctuation, and newlines,
+    /// unlocking the secrets of the parsed data.
+    ///
+    /// # Usage
+    /// To initiate the parsing process, simply invoke the `parse` function on the `Parser` instance.
+    /// It will navigate through the tokens, matching patterns and executing the corresponding actions.
+    /// The magic of parsing will unfold before your eyes.
+    ///
+    /// ```rust
+    /// let mut parser = Parser::new(/* Provide tokens */);
+    ///
+    /// // Begin the parsing adventure
+    /// parser.parse();
+    /// ```
     pub fn parse(&mut self) {
         self.advance();
         while let Some(token) = &self.current_token {
@@ -65,7 +95,7 @@ impl Parser {
                         if expr.playlists.len() < 2 {
                             panic!("Expected two or more playlists");
                         } else {
-                            println!("Merge playlists {:?} into {}", expr.playlists, expr.into)
+                            println!("Merge playlists {:?} into {}", expr.playlists, expr.into);
                         }
                     }
                     _ => {
@@ -84,6 +114,10 @@ impl Parser {
         }
     }
 
+    /// The `parse_create` function is responsible for parsing the creation expression within the `Parser` instance.
+    /// It captures the playlist name and optionally extracts the tracks associated with it.
+    /// This function gracefully handles different scenarios based on the encountered tokens,
+    /// ensuring a harmonious creation process.
     fn parse_create(&mut self) -> CreateExpr {
         self.advance();
         self.capture_keyword("playlist");
@@ -111,6 +145,10 @@ impl Parser {
         }
     }
 
+    /// The `parse_merge` function is responsible for parsing the merging expression within the `Parser` instance.
+    /// It captures the source playlists and the destination playlist where they will be merged.
+    /// This function gracefully handles different scenarios based on the encountered tokens, ensuring a seamless
+    /// merging process.
     fn parse_merge(&mut self) -> MergeExpr {
         self.advance();
 
@@ -133,12 +171,16 @@ impl Parser {
         }
     }
 
+    /// The `skip_newline` function is responsible for skipping over newline tokens encountered during the parsing process within the `Parser` instance.
+    /// It checks the current token and advances the parsing cursor if a newline token is found.
+    /// This function helps maintain the flow of parsing by effortlessly handling newlines.
     fn skip_newline(&mut self) {
-        if let Some(Token::Newline) = self.current_token {
+        if self.current_token == Some(Token::Newline) {
             self.advance();
         }
     }
 
+    /// The `capture_tracks` function is responsible for capturing the tracks within the parsing process of the `Parser` instance.
     fn capture_tracks(&mut self) -> Vec<String> {
         let mut tracks = Vec::new();
 
@@ -151,12 +193,10 @@ impl Parser {
                         tracks = self.selected_tracks.clone();
                         self.advance();
                         return tracks;
-                    } else {
-                        panic!("Invalid syntax")
                     }
-                } else {
-                    panic!("Invalid syntax")
                 }
+
+                panic!("Invalid syntax")
             }
         }
 
@@ -178,6 +218,7 @@ impl Parser {
         tracks
     }
 
+    /// The `capture_playlists` function is responsible for capturing the playlists within the parsing process of the `Parser` instance.
     fn capture_playlists(&mut self) -> Vec<String> {
         let mut playlists = Vec::new();
 
@@ -190,12 +231,10 @@ impl Parser {
                         playlists = self.selected_playlists.clone();
                         self.advance();
                         return playlists;
-                    } else {
-                        panic!("Invalid syntax")
                     }
-                } else {
-                    panic!("Invalid syntax")
                 }
+
+                panic!("Invalid syntax")
             }
         }
 
@@ -217,43 +256,50 @@ impl Parser {
         playlists
     }
 
+    /// The `capture_keyword` function is responsible for capturing the keywords within the parsing process of the `Parser` instance.
     fn capture_keyword(&mut self, expected: &str) {
         if let Some(Token::Keyword(value)) = self.current_token.take() {
             if value == expected {
                 self.advance();
             } else {
-                Parser::error(&format!("Expected keyword: '{expected}'"));
+                Self::error(&format!("Expected keyword: '{expected}'"));
 
                 panic!()
             }
         } else {
-            Parser::error(&format!("Expected keyword: '{expected}'"));
+            Self::error(&format!("Expected keyword: '{expected}'"));
 
             panic!()
         }
     }
 
+    /// The `capture_string_literal` function is responsible for capturing the string literals within the parsing process of the `Parser` instance.
     fn capture_string_literal(&mut self, error_msg: &str) -> String {
         if let Some(Token::StringLiteral(value)) = self.current_token.take() {
             self.advance();
             value
         } else {
-            Parser::error(error_msg);
+            Self::error(error_msg);
 
             panic!()
         }
     }
 
+    /// The `error` function is responsible for raising an error and terminating the program flow with the provided error message.
     fn error(message: &str) {
         panic!("{}", message)
     }
 }
 
+/// The `CreateExpr` struct represents the result of parsing a playlist
+/// creation expression within the `Parser` instance.
 struct CreateExpr {
     playlist_name: String,
     tracks: Vec<String>,
 }
 
+/// The `MergeExpr` struct represents the result of parsing a playlist merging
+/// expression within the `Parser` instance.
 struct MergeExpr {
     playlists: Vec<String>,
     into: String,

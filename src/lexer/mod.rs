@@ -17,6 +17,9 @@
 
 use std::str::Chars;
 
+/// The `Token` enum captures the various categories of tokens that can be
+/// encountered while performing lexical analysis.
+///
 #[derive(Debug, PartialEq, Eq)]
 pub enum Token {
     Keyword(String),
@@ -28,6 +31,10 @@ pub enum Token {
     Newline,
 }
 
+/// The `Lexer` struct serves as a magical entity responsible for lexical analysis.
+/// It takes the input characters as a stream and systematically transforms them into a sequence of meaningful tokens.
+/// By applying the rules of the language's syntax, the `Lexer` captures the essence of
+/// the input and facilitates further parsing and interpretation.
 pub struct Lexer<'a> {
     input: Chars<'a>,
     current_char: Option<char>,
@@ -76,6 +83,7 @@ static KEYWORDS: &[&str] = &[
 ];
 
 impl<'a> Lexer<'a> {
+    /// The `new` function creates a new `Lexer` instance, preparing it for lexical analysis.
     pub fn new(input: &'a str) -> Self {
         let mut chars = input.chars();
         let current_char = chars.next();
@@ -86,10 +94,12 @@ impl<'a> Lexer<'a> {
         }
     }
 
+    /// Advances the `Lexer` to the next character in the input stream.
     fn advance(&mut self) {
         self.current_char = self.input.next();
     }
 
+    /// Tokenizes the input.
     pub fn lex(&mut self) -> Vec<Token> {
         let mut tokens = vec![];
 

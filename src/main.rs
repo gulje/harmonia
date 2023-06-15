@@ -15,6 +15,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#![forbid(unsafe_code)]
+
 use clap::Parser;
 
 mod build;

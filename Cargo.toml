@@ -1,6 +1,6 @@
 [package]
 name = "harmonia"
-description = "Organize your complex Spotify playlists with a single script"
+description = "Effortlessly beautify your Spotify playlists with just a single, enchanting script"
 version = "0.1.0"
 edition = "2021"
 authors = ["gulje <guljeee@yandex.com>"]

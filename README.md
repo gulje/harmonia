@@ -1,7 +1,8 @@
 # harmonia
-harmonia, organize your complex Spotify playlists with a single script.
+harmonia, effortlessly beautify your Spotify playlists
+with just a single, enchanting script. 💫 🎵
 
-**CAUTION:** Since `harmonia` is in its very early stages, keep in mind that you may need a backup of the playlists while using it!
+**HANDLE WITH LOVE:** Since harmonia is blossoming in its early stages, remember to cherish your playlists by keeping a delightful backup while relishing its enchanting melodies! 🌸 🎶 💖
 
 ## Overview
 Before reading:
@@ -237,4 +238,4 @@ any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License](LICENSE) for
-more details.
+more details! >.<
