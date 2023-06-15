@@ -1,6 +1,10 @@
 [package]
 name = "harmonia"
+description = "Organize your complex Spotify playlists with a single script"
 version = "0.1.0"
 edition = "2021"
+authors = ["gulje <guljeee@yandex.com>"]
+license = "GPL-3.0"
 
 [dependencies]
+clap = { version = "4.3.4", features = ["derive", "cargo"] }
