@@ -37,15 +37,11 @@ Report bugs to: {author} or <https://github.com/gulje/harmonia/issues>"#)]
 struct Arguments {}
 
 fn main() {
-    let input_code = r#"define renaming implementation my_implementation {
-        if p contains "tap" {
-            return "UwU"
-        } else {
-            return "rust and roll"
-        }
-    }
-
-    hello1
+    let input_code = r#"
+create playlist 'test1' with "hehe"
+create playlist 'test1'
+    with "test", "test2"
+create playlist 'test231312'
 "#;
 
     let _args = Arguments::parse();
@@ -53,7 +49,6 @@ fn main() {
     let mut lexer = lexer::Lexer::new(input_code);
     let tokens = lexer.lex();
 
-    for token in tokens {
-        println!("{token:?}");
-    }
+    let mut parser = parser::Parser::new(tokens);
+    parser.parse();
 }

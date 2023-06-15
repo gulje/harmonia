@@ -14,3 +14,119 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+use crate::lexer::Token;
+
+pub struct Parser {
+    tokens: Vec<Token>,
+    current_token: Option<Token>,
+}
+
+impl Parser {
+    pub fn new(tokens: Vec<Token>) -> Self {
+        Parser {
+            tokens,
+            current_token: None,
+        }
+    }
+
+    fn advance(&mut self) {
+        if !self.tokens.is_empty() {
+            self.current_token = Some(self.tokens.remove(0));
+        } else {
+            self.current_token = None;
+        }
+    }
+
+    pub fn parse(&mut self) {
+        self.advance();
+        while let Some(token) = &self.current_token {
+            match token {
+                Token::Keyword(keyword) => match keyword.as_str() {
+                    "create" => {
+                        self.parse_create();
+                    }
+                    _ => {
+                        self.advance();
+                    }
+                },
+                Token::Identifier(_identifier) => {}
+                Token::Literal(_literal) => {}
+                Token::Operator(_operator) => {}
+                Token::Punctuation(_punctuation) => {}
+                Token::StringLiteral(_string_literal) => {}
+                Token::Newline => {
+                    self.advance();
+                }
+            }
+        }
+    }
+
+    fn parse_create(&mut self) {
+        self.advance();
+        self.capture_keyword("playlist");
+        let playlist_name = self.capture_string_literal("Expected playlist name");
+
+        if let Some(Token::Newline) = self.current_token {
+            self.advance();
+        }
+
+        if let Some(Token::Keyword(keyword)) = &self.current_token {
+            if keyword == "with" {
+                self.advance();
+                let tracks = self.capture_tracks();
+
+                println!("Create playlist {playlist_name:?} with tracks: {tracks:?}");
+            } else {
+                println!("Create playlist {playlist_name:?}");
+            }
+        } else {
+            println!("Create playlist {playlist_name:?}");
+        }
+    }
+
+    fn capture_tracks(&mut self) -> Vec<String> {
+        let mut tracks = Vec::new();
+
+        loop {
+            let track_name = self.capture_string_literal("Expected a track");
+            tracks.push(track_name);
+
+            if let Some(Token::Punctuation(punctuation)) = &self.current_token {
+                if punctuation == "," {
+                    self.advance();
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        tracks
+    }
+
+    fn capture_keyword(&mut self, expected: &str) {
+        if let Some(Token::Keyword(value)) = self.current_token.take() {
+            if value == expected {
+                self.advance();
+            } else {
+                self.error(&format!("Expected keyword: '{expected}'"))
+            }
+        } else {
+            self.error(&format!("Expected keyword: '{expected}'"))
+        }
+    }
+
+    fn capture_string_literal(&mut self, error_msg: &str) -> String {
+        if let Some(Token::StringLiteral(value)) = self.current_token.take() {
+            self.advance();
+            value.clone()
+        } else {
+            self.error(error_msg)
+        }
+    }
+
+    fn error<T>(&self, message: &str) -> T {
+        panic!("{}", message)
+    }
+}
